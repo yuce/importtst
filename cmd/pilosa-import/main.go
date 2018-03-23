@@ -52,16 +52,13 @@ func main() {
 	var err error
 
 	if len(os.Args) != 4 {
-		log.Fatal(fmt.Sprintf("Usage: %s PILOSA_ADDR PATH.csv|PATH.csv.gz BATCH_SIZE", os.Args[0]))
+		fmt.Printf("Usage: %s PILOSA_ADDR PATH.csv|PATH.csv.gz BATCH_SIZE\n", os.Args[0])
+		fmt.Println("Pass - as PATH to read the data from stdin")
+		os.Exit(1)
 	}
 	pilosaAddr := os.Args[1]
 	path := os.Args[2]
 	batchSize, err := strconv.Atoi(strings.Replace(os.Args[3], "_", "", -1))
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	_, err = os.Stat(path)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -71,11 +68,21 @@ func main() {
 		log.Fatal(err)
 	}
 
-	f, err := os.Open(path)
-	if err != nil {
-		log.Fatal(err)
+	var f *os.File
+
+	if path == "-" {
+		f = os.Stdin
+	} else {
+		_, err = os.Stat(path)
+		if err != nil {
+			log.Fatal(err)
+		}
+		f, err = os.Open(path)
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer f.Close()
 	}
-	defer f.Close()
 
 	var bitIterator pilosa.BitIterator
 	if strings.HasSuffix(path, ".gz") {
