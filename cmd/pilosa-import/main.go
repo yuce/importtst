@@ -122,12 +122,13 @@ func main() {
 				break
 			}
 			totalImported += status.ImportedCount
+		default:
+			took := time.Since(tic)
 			goterm.MoveCursorUp(1)
 			goterm.Print(fmt.Sprintf("Imported %d bits in %d s. Speed: %d bits/s.",
-				totalImported, int(time.Since(tic).Seconds()), int(float64(status.ImportedCount)/status.Time.Seconds())))
+				totalImported, int(took.Seconds()), int(float64(totalImported)/took.Seconds())))
 			goterm.Flush()
-		default:
-			time.Sleep(100 * time.Millisecond)
+			time.Sleep(1000 * time.Millisecond)
 		}
 	}
 	log.Printf("Imported %d bits in %d milliseconds", totalImported, time.Since(tic).Nanoseconds()/1000000)

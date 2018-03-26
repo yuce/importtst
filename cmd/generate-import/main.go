@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"log"
 	"math/rand"
@@ -35,12 +36,13 @@ func main() {
 		defer f.Close()
 	}
 
-	rand.Seed(randomSeed)
+	randGen := rand.New(rand.NewSource(randomSeed))
+	w := bufio.NewWriter(f)
 
 	for i := 0; i < bitCount; i++ {
-		rid := rand.Int63n(maxRowID)
-		cid := rand.Int63n(maxColID)
-		_, err := f.WriteString(fmt.Sprintf("%d,%d\n", rid, cid))
+		rid := randGen.Int63n(maxRowID)
+		cid := randGen.Int63n(maxColID)
+		_, err := w.WriteString(fmt.Sprintf("%d,%d\n", rid, cid))
 		if err != nil {
 			log.Fatal(err)
 		}
