@@ -2,6 +2,8 @@
 
 ## Install
 
+**REQUIRES** https://github.com/yuce/go-pilosa/tree/optimize-imports
+
 ```
 go get -u github.com/yuce/importtst
 ```
