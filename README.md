@@ -1,11 +1,19 @@
 # Pilosa Import Test
 
-## Install
+## Requirements
 
-**REQUIRES** https://github.com/yuce/go-pilosa/tree/optimize-imports
+* Go Pilosa from https://github.com/yuce/go-pilosa/tree/optimize-imports
+* D Compiler: https://dlang.org/download.html
+
+## Install
 
 ```
 go get -u github.com/yuce/importtst
+```
+
+In order to create binaries:
+```
+make
 ```
 
 ## Usage
