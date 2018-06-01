@@ -84,7 +84,7 @@ func main() {
 		defer f.Close()
 	}
 
-	var bitIterator pilosa.BitIterator
+	var bitIterator pilosa.RecordIterator
 	if strings.HasSuffix(path, ".gz") {
 		if bitIterator, err = csvGZipIterator(f); err != nil {
 			log.Fatal(err)
@@ -105,7 +105,10 @@ func main() {
 	fmt.Printf("===\n\n")
 
 	go func() {
-		err := client.ImportFrameWithStatus(f1, bitIterator, uint(batchSize), statusChan)
+		err := client.ImportFrame(f1, bitIterator,
+			pilosa.OptImportBatchSize(batchSize),
+			pilosa.OptImportStrategy(pilosa.BatchImport),
+			pilosa.OptImportStatusChannel(statusChan))
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -134,7 +137,7 @@ func main() {
 	log.Printf("Imported %d bits in %d milliseconds", totalImported, time.Since(tic).Nanoseconds()/1000000)
 }
 
-func csvGZipIterator(f *os.File) (*pilosa.CSVBitIterator, error) {
+func csvGZipIterator(f *os.File) (pilosa.RecordIterator, error) {
 	reader, err := gzip.NewReader(f)
 	if err != nil {
 		return nil, err
@@ -142,7 +145,7 @@ func csvGZipIterator(f *os.File) (*pilosa.CSVBitIterator, error) {
 	return pilosa.NewCSVBitIterator(reader), nil
 }
 
-func csvIterator(f *os.File) *pilosa.CSVBitIterator {
+func csvIterator(f *os.File) pilosa.RecordIterator {
 	reader := bufio.NewReader(f)
 	return pilosa.NewCSVBitIterator(reader)
 }

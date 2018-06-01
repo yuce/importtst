@@ -111,7 +111,7 @@ class RandomBitWriter : BitWriter {
     }
     
     void writeBits(FILE *f) {
-        for (long i = 0; i < this.bitCount; i++) {
+        foreach (i; 0 .. this.bitCount) {
             const rowID = uniform(0L, this.maxRowID, this.rnd);
             const colID = uniform(0L, this.maxColumnID, this.rnd);
             f.fprintf("%d,%d\n", rowID, colID);
@@ -141,8 +141,8 @@ class LinearRowBitWriter : BitWriter {
     }
 
     void writeBits(FILE *f) {
-        for (int rowID = 0; rowID < this.rowIDCount; rowID++) {
-            for (int colID = 0; colID < this.columnIDCount; colID++) {
+        foreach (rowID; 0 .. this.rowIDCount) {
+            foreach (colID; 0 .. this.columnIDCount) {
                 f.fprintf("%d,%d\n", rowID, colID);
             }
         }
@@ -167,8 +167,8 @@ class ReverseLinearRowBitWriter : BitWriter {
     }
 
     void writeBits(FILE *f) {
-        for (long rowID = this.rowIDCount - 1; rowID >= 0; rowID--) {
-            for (long colID = this.columnIDCount - 1; colID >= 0; colID--) {
+        foreach_reverse (rowID; 0 .. this.rowIDCount) {
+            foreach_reverse (colID; 0 .. this.columnIDCount) {
                 f.fprintf("%d,%d\n", rowID, colID);
             }
         }
@@ -193,8 +193,8 @@ class LinearColumnBitWriter : BitWriter {
     }
 
     void writeBits(FILE *f) {
-        for (int colID = 0; colID < this.columnIDCount; colID++) {
-            for (int rowID = 0; rowID < this.rowIDCount; rowID++) {
+        foreach (colID; 0 .. this.columnIDCount) {
+            foreach (rowID; 0 .. this.rowIDCount) {
                 f.fprintf("%d,%d\n", rowID, colID);
             }
         }
@@ -219,8 +219,10 @@ class LinearGapRowBitWriter : BitWriter {
     }
 
     void writeBits(FILE *f) {
-        for (int rowID = 0; rowID < this.rowIDCount; rowID++) {
-            for (int colID = 0; colID < this.columnIDCount; colID += 2) {
+        import std.range: iota;
+        import std.algorithm: filter;
+        foreach (rowID; 0 .. this.rowIDCount) {
+            foreach (colID; this.columnIDCount.iota.filter!(n => n % 2)) {
                 f.fprintf("%d,%d\n", rowID, colID);
             }
         }
